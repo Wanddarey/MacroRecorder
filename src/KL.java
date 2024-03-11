@@ -1,6 +1,8 @@
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
+//Implement JNI(Java Native Interface) to capture keyboard events outside of this application
+
 public class KL implements KeyListener {
 
    private Boolean keyPressed[] = new Boolean[128];
@@ -31,12 +33,19 @@ public class KL implements KeyListener {
       pressedKey = -1;
    }
 
+   /**
+    * Returns {@code true} if the specified key is pressed
+    * @param keyCode - {@code Integer}
+    */
    public boolean isKeyPressed(int keyCode) {
       return keyPressed[keyCode];
    }
 
    Integer keyNumb = 0;
 
+   /**
+    * Returns {@code true} if any key is pressed
+    */
    public boolean isPressed() {
       if (pressedKey == -1) {
          return false;
@@ -44,6 +53,10 @@ public class KL implements KeyListener {
       return true;
    }
 
+   /**
+    * Returns the key that is currently pressed. Returns {@code -1} if no key is being pressed
+    * @return {@code Integer}
+    */
    public int pressedKey() {
       return pressedKey;
    }
