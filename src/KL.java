@@ -1,7 +1,7 @@
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
-//Implement JNI(Java Native Interface) to capture keyboard events outside of this application
+//Implement JNH(Java Native hook) to capture keyboard events outside of this application
 
 public class KL implements KeyListener {
 

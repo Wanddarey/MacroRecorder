@@ -9,6 +9,11 @@ import java.time.format.DateTimeFormatter;
 import java.awt.Color;
 import java.awt.FlowLayout;
 import java.awt.event.KeyEvent;
+
+import com.github.kwhat.jnativehook.GlobalScreen;
+import com.github.kwhat.jnativehook.NativeHookException;
+import com.github.kwhat.jnativehook.keyboard.NativeKeyEvent;
+import com.github.kwhat.jnativehook.keyboard.NativeKeyListener;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
@@ -20,9 +25,18 @@ import java.util.regex.Pattern;
 public class Window extends JFrame implements Runnable {
 
    Boolean recording = false;
-   KL KeyListener = new KL();
+   NKL KeyListener = new NKL();
 
    public Window() {
+      try {
+         GlobalScreen.registerNativeHook();
+      }catch(NativeHookException ex) {
+         System.err.println("There was a problem registering the native hook.");
+         System.err.println(ex.getMessage());
+   
+         System.exit(1);
+      }
+
       FlowLayout flw = new FlowLayout();
       this.setLayout(flw);
       this.setSize(Constants.SCREEN_WIDTH, Constants.SCREEN_HEIGHT);
@@ -30,7 +44,8 @@ public class Window extends JFrame implements Runnable {
       this.setResizable(false);
       this.setVisible(true);
       this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-      this.addKeyListener(KeyListener);
+      // this.addKeyListener(KeyListener);
+      GlobalScreen.addNativeKeyListener(KeyListener);
       JButton button = new JButton("Click Me");
       this.add(button);
       button.setBounds(350, 100, 100, 50);
@@ -50,6 +65,7 @@ public class Window extends JFrame implements Runnable {
 
    /**
     * In the name mah nigga
+    * 
     * @param filename self explanatory
     */
    public void saveToFile(String filename) {
@@ -64,7 +80,8 @@ public class Window extends JFrame implements Runnable {
    }
 
    /**
-    * Called uppon switching {@code recording} to {@code false}. Saves the current action in progress and asks user for filename etc...
+    * Called uppon switching {@code recording} to {@code false}. Saves the current
+    * action in progress and asks user for filename etc...
     */
    public void save() {
       if (cumPressTime != 0) {
@@ -76,8 +93,9 @@ public class Window extends JFrame implements Runnable {
       }
       pressedKey = -1;
       cumPressTime = 0;
-      String userInput = JOptionPane.showInputDialog(null, "File name (if null then a name will be given automatically):");
-      //TODO: FIX THIS BULLSHIT (userInput != "" isn't working for some reason)
+      String userInput = JOptionPane.showInputDialog(null,
+            "File name (if null then a name will be given automatically):");
+      // TODO: FIX THIS BULLSHIT (userInput != "" isn't working for some reason)
       if (userInput != null && userInput != "") {
          String filenameRegex = "^[a-zA-Z0-9._-]+$";
          Pattern pattern = Pattern.compile(filenameRegex);
@@ -130,7 +148,8 @@ public class Window extends JFrame implements Runnable {
 
          if (KeyListener.pressedKey == 112) {
             recording = !recording;
-            if (!recording) save();
+            if (!recording)
+               save();
          }
          if (recording)
             update(Time.getDT(lastFrameTime));
